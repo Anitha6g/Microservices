@@ -12,6 +12,7 @@ public class LocationDTO {
 	public String zone;
 	@CsvBindByName(column = "service_zone")
 	public String serviceZone;
+	
 	public int getLocationID() {
 		return locationID;
 	}
