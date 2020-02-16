@@ -33,7 +33,7 @@ public class FileReaderService implements IFileReaderService {
 //			inputStream = new FileInputStream(file);
 //			bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 //			String line = bufferedReader.readLine();
-			File file = new File("C:\\Users\\anith\\OneDrive\\Desktop\\Semester_2\\Research_topics_in_AI\\taxitrip.csv");
+			File file = new File("C:\\Users\\data\\taxitrip.csv");
 			LineIterator line = FileUtils.lineIterator(file);
 			
 			while (line.hasNext()) {

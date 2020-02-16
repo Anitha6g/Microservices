@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 public class TripDataDTO implements Serializable {
 	private static final long serialVersionUID = -3752315103550511761L;
     private int VendorID;
@@ -126,6 +127,9 @@ public class TripDataDTO implements Serializable {
 	}
 	public void setTotal_amount(double total_amount) {
 		this.total_amount = total_amount;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 	@Override
 	public String toString() {

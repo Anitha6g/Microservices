@@ -2,7 +2,6 @@ package com.filereader.service.filereader.controller;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,20 +11,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.filereader.service.filereader.serviceinterface.IFileReaderService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/fileRead")
+@Slf4j
 public class FileReaderController {
 
 	@Autowired
 	private IFileReaderService fileReaderService;
-  
-	static final Logger log = Logger.getLogger(FileReaderController.class);
-	
+
 	@GetMapping("/tripData")
 	public ResponseEntity<String> publishTripData() throws IOException {
-		log.info("Start of File Load");
 		fileReaderService.sendTripMessage("yellow_tripdata_2018-01.csv");
-		log.info("End of File Load");
 		return new ResponseEntity<String>("Success", HttpStatus.OK);
 	}
 

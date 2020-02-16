@@ -1,34 +1,53 @@
 package com.enricher.enricherreader.service;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.DateValidator;
+import org.apache.commons.validator.GenericValidator;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
+import com.enricher.enricherreader.dto.CollisionDTO;
 import com.enricher.enricherreader.dto.LocationDTO;
 import com.enricher.enricherreader.dto.TripDataDTO;
+import com.enricher.enricherreader.utility.CarshFilterUtility;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.CsvToBeanFilter;
+import com.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
 
 @Component
 @EnableJms
 public class TripDetailsConsumer {
-
+	
 	static final Logger logger = Logger.getLogger(TripDetailsConsumer.class);
 
 	public static List<LocationDTO> alpha;
+	public static List<CollisionDTO> collision;
 
 	@JmsListener(destination = "trip-queue",concurrency = "1-50")
 	public void tripListener(String message) {
@@ -52,13 +71,13 @@ public class TripDetailsConsumer {
 		trip.setTollsAmount(Double.parseDouble(tripfile[14]));
 		trip.setImprovementSurcharge(Double.parseDouble(tripfile[15]));
 		trip.setTotalAmount(Double.parseDouble(tripfile[16]));
-	for(LocationDTO locationDTO: alpha) {
-		if(locationDTO.getLocationID() == trip.getDoLocationID()) {
-			trip.setBorough(locationDTO.getBorough());
-			trip.setZone(locationDTO.getZone());
-			
-		}
-	} 	
+		for(LocationDTO locationDTO: alpha) {
+			if(locationDTO.getLocationID() == trip.getDoLocationID()) {
+				trip.setBorough(locationDTO.getBorough());
+				trip.setZone(locationDTO.getZone());
+
+			}
+		} 	
 	}
 
 	@PostConstruct
@@ -80,4 +99,52 @@ public class TripDetailsConsumer {
 			e.printStackTrace();
 		}
 	}
+
+//	@PostConstruct
+//	public void crashLookup() throws IOException{
+//		File file = new File("C:/Users/data/collision.csv");
+//		InputStream inputStream = new FileInputStream(file);
+//		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));;
+////		String line;
+////		collision = new ArrayList<CollisionDTO>();
+////		int itr = 0;
+////		CollisionDTO collsioDto = new CollisionDTO();
+////		DateTimeFormatter df = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+////		while ((line = bufferedReader.readLine()) != null) {
+////			if(itr != 0) {
+////			String[] collisionData = line.toString().split(",");
+////			if(GenericValidator.isDate(collisionData[0], "MM/dd/yyyy", false)) {
+////			collsioDto.setCrashDate(LocalDate.parse((collisionData[0]), df));
+////			collsioDto.setCrashTime(collisionData[1]);
+////			collsioDto.setBorough(collisionData[2]);
+////			collsioDto.setLocation(collisionData[6]);
+////			collsioDto.setStreetName(collisionData[7]);
+////
+////
+////			collision.add(collsioDto);
+////			}
+////			}
+////			itr++;
+////		}
+////logger.info(collision);
+////		bufferedReader.close();
+//		List<CollisionDTO> collisionList = new ArrayList<CollisionDTO>();
+//		collisionList = bufferedReader.lines().skip(1).map(line ->{
+//			String[] collisionData = line.split(",");
+//			CollisionDTO collsioDto = new CollisionDTO();
+//			if(GenericValidator.isDate(collisionData[0], "MM/dd/yyyy", false)) {
+//				
+//				DateTimeFormatter df = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+//				collsioDto.setCrashDate(LocalDate.parse((collisionData[0]), df));
+//				collsioDto.setCrashTime(collisionData[1]);
+//				collsioDto.setBorough(collisionData[2]);
+//				collsioDto.setLocation(collisionData[6]);
+//				collsioDto.setStreetName(collisionData[7]);
+//			}
+//			return collsioDto;
+//		}
+//		
+//				).collect(Collectors.toList());
+//		logger.info(collisionList);
+//	}
 }
